@@ -13,7 +13,7 @@ pipeline {
         stage('Build Docker Images') {
             steps {
                 echo "== Build des images Docker =="
-                sh 'docker-compose build'
+                sh 'docker-compose build --no-cache'
             }
         }
 
@@ -33,14 +33,20 @@ pipeline {
             }
         }
 
+        stage('Cleanup') {
+            steps {
+                echo "== Nettoyage des images inutilisées =="
+                sh 'docker image prune -f'
+            }
+        }
     }
 
     post {
         success {
-            echo "Pipeline OK  Déploiement terminé."
+            echo "Pipeline OK – Déploiement terminé."
         }
         failure {
-            echo "Pipeline FAILED "
+            echo "Pipeline FAILED"
         }
     }
 }
