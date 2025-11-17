@@ -16,7 +16,7 @@ services:
       dockerfile: Dockerfile
     container_name: reservation-frontend
     ports:
-      - "8080:80"
+      - "8084:80"
     depends_on:
       - backend
     restart: unless-stopped
