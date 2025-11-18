@@ -1,11 +1,22 @@
+FROM node:18-alpine AS build-stage
+
+WORKDIR /app
+COPY front/ ./
+
+RUN npm install
+RUN npm run build
+
+# ==== STAGE 2 : Serveur Nginx ====
 FROM nginx:alpine
 
-# Installer bash pour Jenkins Durable Task
-RUN apk add --no-cache bash
+# Supprimer la page par défaut
+RUN rm -rf /usr/share/nginx/html/*
 
-WORKDIR /usr/share/nginx/html
+# Copier le build réel du front
+COPY --from=build-stage /app/dist /usr/share/nginx/html
 
-COPY . .
+# Copier une config nginx si nécessaire
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
