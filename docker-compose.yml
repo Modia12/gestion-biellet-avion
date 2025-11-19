@@ -1,6 +1,7 @@
 version: "3.8"
 
 services:
+
   backend:
     build:
       context: ./backend
@@ -8,7 +9,11 @@ services:
     container_name: reservation-backend
     ports:
       - "3001:3001"
+    environment:
+      - NODE_ENV=production
     restart: unless-stopped
+    networks:
+      - reservation-network
 
   frontend:
     build:
@@ -20,3 +25,8 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    networks:
+      - reservation-network
+
+networks:
+  reservation-network:

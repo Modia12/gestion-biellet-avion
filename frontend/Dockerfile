@@ -2,14 +2,12 @@ FROM node:18-alpine AS build-stage
 
 WORKDIR /app
 
-COPY frontend/ ./
+COPY . .
 
-RUN npm install
-RUN npm run build
+RUN npm install && npm run build
 
 FROM nginx:alpine
 
-RUN rm -rf /usr/share/nginx/html/*
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
 EXPOSE 80
