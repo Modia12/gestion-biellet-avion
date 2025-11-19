@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile
     container_name: reservation-backend
     ports:
-      - "3001:3001"
+      - "5000:5000"      # Port exposé sur la machine
     environment:
       - NODE_ENV=production
     restart: unless-stopped
@@ -21,9 +21,11 @@ services:
       dockerfile: Dockerfile
     container_name: reservation-frontend
     ports:
-      - "8084:80"
+      - "8084:80"        # Port exposé sur la machine
     depends_on:
       - backend
+    environment:
+      - REACT_APP_API_URL=http://backend:5000  # <-- Permet au frontend de communiquer avec le backend via Docker
     restart: unless-stopped
     networks:
       - reservation-network
