@@ -1,15 +1,28 @@
+# Utiliser Node 18 officiel
 FROM node:18
 
-# Installer bash pour Jenkins Durable Task
-RUN apt-get update && apt-get install -y bash
-
+# Définir le dossier de travail
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install
+# Installer bash (utile si tu exécutes des scripts)
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends bash \
+ && rm -rf /var/lib/apt/lists/*
 
+# Copier les fichiers de dépendances
+COPY package*.json ./
+
+# Installer les dépendances Node
+RUN npm install --production
+
+# Copier le reste du code
 COPY . .
 
+# Définir la variable d'environnement Node
+ENV NODE_ENV=production
+
+# Exposer le port 3001 (docker-compose le mappe sur l'hôte)
 EXPOSE 3001
 
-CMD ["npm", "start"]
+# Commande pour démarrer le serveur
+CMD ["node", "server.js"]
