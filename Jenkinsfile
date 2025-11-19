@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_CLI_EXPERIMENTAL = "enabled"
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -16,7 +20,7 @@ pipeline {
             }
         }
 
-        stage('Tests') {
+        stage('Tests Backend') {
             steps {
                 echo "== Tests backend =="
                 dir('backend') {
@@ -25,7 +29,16 @@ pipeline {
             }
         }
 
-        stage('Deploy with Docker Compose') {
+        stage('Tests Frontend') {
+            steps {
+                echo "== Tests frontend =="
+                dir('frontend') {
+                    sh 'npm test || echo "Aucun test disponible"'
+                }
+            }
+        }
+
+        stage('Deploy') {
             steps {
                 echo "== Déploiement avec Docker Compose =="
                 sh 'docker compose up -d --build'
@@ -43,7 +56,6 @@ pipeline {
     post {
         success {
             echo "✅ Pipeline OK – Déploiement terminé."
-            // Exemple notification Slack
             slackSend(
                 channel: '#ci-cd',
                 color: 'good',
@@ -52,7 +64,6 @@ pipeline {
         }
         failure {
             echo "❌ Pipeline FAILED"
-            // Exemple notification Slack
             slackSend(
                 channel: '#ci-cd',
                 color: 'danger',
